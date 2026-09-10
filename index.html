@@ -1937,7 +1937,7 @@
  .family-search {left:24px !important;right:24px !important;}
  .family-search input {font-size:16px !important;height:40px !important;}
  .family-toolbar {left:24px !important;right:24px !important;flex-wrap:nowrap !important; padding:5px !important;gap:5px !important;}
- .family-toolbar button {flex:1;min-width:0;height:40px !important;padding:0 4px !important;font-size:12px !important;}
+ .family-toolbar button {flex:1;min-width:0;height:40px !important;padding:0 4px !important;font-size:11px !important;}
  .family-viewport {top:272px !important;bottom:142px !important;left:20px !important;right:20px !important;}
  .generation-menu {right:24px !important;bottom:92px !important;}
  .generation-menu>button {height:40px !important;}
@@ -2117,7 +2117,8 @@ Object.assign(window.DOC_DATA, {
   <div ref="{{ setToolbarRef }}" class="family-toolbar" style="{{ toolbarWrapStyle }}">
       <button onClick="{{ exportData }}" title="Xuất file HTML mang theo mọi thay đổi hiện tại" style="height:30px; padding:0 10px; border-radius:6px; border:1px solid oklch(0.85 0.13 90); background:oklch(0.36 0.15 28 / 0.95); color:oklch(0.94 0.08 88); font-size:13px; font-weight:500; cursor:pointer;" style-hover="background:oklch(0.42 0.16 28 / 0.95);">{{ exportLabel }}</button>
       <button onClick="{{ openDocs }}" title="Xem các bản chép tay, sơ đồ và tờ khai gốc" style="height:30px; padding:0 10px; border-radius:6px; border:1px solid oklch(0.85 0.13 90); background:oklch(0.72 0.14 82); color:oklch(0.28 0.12 30); font-size:13px; font-weight:500; cursor:pointer;" style-hover="background:oklch(0.82 0.13 88);">Tài liệu ghi chép</button>
-    </div>
+    <button type="button" data-landscape-toggle="true" style="height:40px; padding:0 8px; border-radius:6px; border:1px solid #d4ad45; background:#79170d; color:#ffe5a0; cursor:pointer;">⤢ Xoay ngang</button>
+</div>
 
   <div ref="{{ setViewportRef }}" onPointerDown="{{ onPointerDown }}" onPointerMove="{{ onPointerMove }}" onPointerUp="{{ onPointerUp }}" onPointerLeave="{{ onPointerUp }}" onWheel="{{ onWheel }}" class="family-viewport" style="{{ viewportWrapStyle }}">
     <div style="position:absolute; top:0; left:0; transform:{{ transform }}; transform-origin:0 0; will-change:transform;">
@@ -3430,6 +3431,33 @@ class Component extends DCLogic {
   }
 }
 
+</script>
+
+<script>
+document.addEventListener('click', async function(event) {
+ const button = event.target.closest('[data-landscape-toggle]');
+ if (!button) return;
+ try {
+  if (screen.orientation && screen.orientation.lock) {
+   if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+    await document.documentElement.requestFullscreen();
+   }
+   await screen.orientation.lock('landscape');
+   return;
+  }
+ } catch (error) {}
+ let hint = document.getElementById('rotate-phone-hint');
+ if (!hint) {
+  hint = document.createElement('div');
+  hint.id = 'rotate-phone-hint';
+  hint.setAttribute('role', 'status');
+  Object.assign(hint.style, {position:'fixed',left:'24px',right:'24px',bottom:'100px',zIndex:'100',padding:'16px',borderRadius:'12px',background:'#fff6df',color:'#651b10',font:'16px/1.5 sans-serif',boxShadow:'0 4px 24px #0005'});
+  hint.textContent = 'Hãy tắt khóa xoay màn hình rồi xoay ngang điện thoại. Trình duyệt này không hỗ trợ xoay tự động.';
+  document.body.appendChild(hint);
+ }
+ clearTimeout(window.rotateHintTimer);
+ window.rotateHintTimer = setTimeout(() => hint.remove(), 6500);
+});
 </script>
 </body>
 </html>
